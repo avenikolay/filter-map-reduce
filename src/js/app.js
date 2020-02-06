@@ -2,7 +2,7 @@ const purchases = [
     {id: 1, date: '01.01.2020', values: [
         {id: 1, amount: 2000, category: 'auto'},
         {id: 2, amount: 3000, category: 'food'},
-        {id: 3, amount: 300, category: 'beauty'}
+        {id: 3, amount: 300, category: 'beauty'},
     ]},
     {id: 2, date: '03.01.2020', values: [
         {id: 4, amount: 3000, category: 'auto'},
@@ -13,71 +13,51 @@ const purchases = [
     ]},
 ];
 
-
 {
     function getMaxPurchaseQuantityDay (purchases) {
-        return purchases.reduce((acc, currentValue) => {
-            return (currentValue.values.length > acc.values.length) ? currentValue : acc;
-        }, purchases[0]);
+        return purchases.reduce((acc, currentValue) => 
+            (currentValue.values.length > acc.values.length) ? currentValue : acc );
     }
   
     function getHighestPurchase (purchases) {
         return purchases.map(day => {
-            const maxPurchaseOfDay = day.values.reduce((acc, currentValue) => {
-                return currentValue.amount > acc.amount ? currentValue : acc
-            }, day.values[0])
+            const maxPurchaseOfDay = day.values.reduce((acc, currentValue) => currentValue.amount > acc.amount ? currentValue : acc );
 
             return { id: day.id, date: day.date, purchase: maxPurchaseOfDay } ;
-        }).reduce((acc, day) => {
-            return acc.purchase.amount > day.purchase.amount ? acc : day;
-        });
+        }).reduce((acc, day) => acc.purchase.amount > day.purchase.amount ? acc : day );
     }
 
     function getStatByCategories(purchases) {
-       const purchasesWithCategories = purchases.reduce((acc, day) => {
-            return [...acc, ...day.values]
-        }, []);
-        const purchasesByCategories =  purchasesWithCategories.reduce((acc, currentValue) => {
-            if (!acc.find(i => i.category === currentValue.category)) {
-                return [...acc, {category: currentValue.category, amount: currentValue.amount}];
-            } else {
-                const localIndex = acc.findIndex(i => i.category === currentValue.category);
-                const newValue = {category: currentValue.category, amount: acc[localIndex].amount += currentValue.amount};
-
-                acc.splice[localIndex, newValue];
+        return purchases.map(purchase => purchase.values).flat()
+        .reduce((acc, currentValue) => {
+            const index = acc.findIndex(i => i.category === currentValue.category);
+            if (index >= 0) {
+                acc[index].amount += currentValue.amount;
                 return acc;
             }
-        }, [])
-        return purchasesByCategories;
+            return [...acc, currentValue];
+        }, []);
     } 
 
     function getStatByDays(purchases) {
         return purchases.map(purchase => {
-            const amountByDay = purchase.values.reduce((acc, currentValue) => {
-                return currentValue.amount + acc;
-            }, 0)
+            const amountByDay = purchase.values.reduce((acc, currentValue) => currentValue.amount + acc, 0)
 
             return {date: purchase.date, amount: amountByDay}
         })
     }
 
     function getCategoryWithMaxPurchases(statByCategories) {
-        return statByCategories.reduce((acc, currentValue) => {
-            return currentValue.amount > acc.amount ? currentValue : acc;
-        })['category'];
+        return statByCategories.reduce((acc, currentValue) => currentValue.amount > acc.amount ? currentValue : acc )['category'];
     }
 
     function getDateWithMaxPurchases(statByDays) {
-        return statByDays.reduce((acc, currentValue) => {
-            return currentValue.amount > acc.amount ? currentValue : acc;
-        })['date'];
+        return statByDays.reduce((acc, currentValue) => currentValue.amount > acc.amount ? currentValue : acc )['date'];
     }
 
     function getAVG(statByDays) {
-        const total = statByDays.reduce((acc, currentValue) => {
-            return acc + currentValue.amount;
-        }, 0);
-        return (total / statByDays.length).toFixed(2);
+        const total = statByDays.reduce((acc, currentValue) => acc + currentValue.amount, 0);
+        return Number((total / statByDays.length).toFixed(2));
     }
 
     
