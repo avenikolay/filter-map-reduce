@@ -20,11 +20,15 @@ const purchases = [
     }
   
     function getHighestPurchase (purchases) {
-        return purchases.map(day => {
-            const maxPurchaseOfDay = day.values.reduce((acc, currentValue) => currentValue.amount > acc.amount ? currentValue : acc );
+        const maxPurchaseOfDay = (acc, currentValue) => currentValue.amount > acc.amount ? currentValue : acc;
 
-            return { id: day.id, date: day.date, purchase: maxPurchaseOfDay } ;
-        }).reduce((acc, day) => acc.purchase.amount > day.purchase.amount ? acc : day );
+        return purchases.map(day => (
+            { 
+                id: day.id, 
+                date: day.date, 
+                purchase: day.values.reduce(maxPurchaseOfDay)
+            }
+        )).reduce((acc, day) => acc.purchase.amount > day.purchase.amount ? acc : day );
     }
 
     function getStatByCategories(purchases) {
@@ -40,11 +44,12 @@ const purchases = [
     } 
 
     function getStatByDays(purchases) {
-        return purchases.map(purchase => {
-            const amountByDay = purchase.values.reduce((acc, currentValue) => currentValue.amount + acc, 0)
-
-            return {date: purchase.date, amount: amountByDay}
-        })
+        return purchases.map(purchase => (
+            {
+                date: purchase.date, 
+                amount: purchase.values.reduce((acc, currentValue) => currentValue.amount + acc, 0)
+            }
+        ))
     }
 
     function getCategoryWithMaxPurchases(statByCategories) {
@@ -65,7 +70,7 @@ const purchases = [
     console.log(`Максимальное количество покупок было совершено: ${maxPurchaseQuantityDay.date}`);
 
 
-    const highestPurchase = getHighestPurchase(purchases)
+   const highestPurchase = getHighestPurchase(purchases)
     console.log(`Самая дорогая покупка была совершена ${highestPurchase.date} на сумму ${highestPurchase.purchase.amount} в категории '${highestPurchase.purchase.category}'`);
 
     const statByCategories = getStatByCategories(purchases);
